@@ -182,6 +182,7 @@
     <Compile Include="Windows\EditBugDetailsForm.Designer.cs">
       <DependentUpon>EditBugDetailsForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Tools\VersionNumberComparer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

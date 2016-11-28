@@ -1,16 +1,29 @@
-﻿using BS.Output.VSO.Properties;
+﻿using BS.Output.VSO.Models;
+using BS.Output.VSO.Properties;
+using BS.Output.VSO.Services;
+using BS.Output.VSO.Tools;
 using System;
+using System.Linq;
 using System.Windows.Forms;
-using BS.Output.VSO.Models;
 
 namespace BS.Output.VSO
 {
     public partial class EditBugDetailsForm : Form
     {
-        public EditBugDetailsForm()
+        public EditBugDetailsForm(VSOOutput output)
         {
             Options = new BugDetails();
             InitializeComponent();
+
+            if (string.IsNullOrEmpty(output.BuildDefinitionName))
+            {
+                lbBuilds.Hide();
+                lblBuild.Hide();
+            }
+            else
+            {
+                GetBuilds(output);
+            }
         }
 
         public BugDetails Options { get; }
@@ -41,6 +54,26 @@ namespace BS.Output.VSO
         private void txtReproSteps_TextChanged(object sender, EventArgs e)
         {
             Options.ReproSteps = txtReproSteps.Text;
+        }
+
+        private void lbBuilds_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            Options.Build = lbBuilds.SelectedItem?.ToString();
+        }
+
+        private async void GetBuilds(VSOOutput output)
+        {
+            VSOClient client = new VSOClient(output);
+            if (!client.Connect())
+            {
+                MessageBox.Show(Resources.Something_went_wrong_while_attempting_to_connect_to_VSO);
+                return;
+            }   
+
+            var builds = await client.GetBuilds(output.ProjectName, output.BuildDefinitionName);
+            var list = builds.OrderByDescending(b => b, new VersionNumberComparer()).ToList();
+            list.Insert(0, string.Empty);
+            lbBuilds.DataSource = list;
         }
     }
 }

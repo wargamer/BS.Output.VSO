@@ -13,6 +13,11 @@ namespace BS.Output.VSO.Models
         public string Title { get; set; }
 
         /// <summary>
+        /// Name of the build which this bugitem is related to
+        /// </summary>
+        public string Build { get; set; }
+
+        /// <summary>
         /// Return True if all required fields have been provided values for
         /// </summary>
         public bool Validate()

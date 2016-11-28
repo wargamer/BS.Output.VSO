@@ -46,6 +46,7 @@ namespace BS.Output.VSO
 
             Output.ProjectName = selectedProject;
             Output.IterationName = lbIterations.SelectedItem?.ToString();
+            Output.BuildDefinitionName = lbBuildDefinitions.SelectedItem?.ToString();
 
             DialogResult = DialogResult.OK;
             Close();
@@ -87,11 +88,6 @@ namespace BS.Output.VSO
             if (itemInList != null)
                 comboxBox.SelectedItem = itemInList;
         }
-
-        private async void lbProjects_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            await GetIterations();
-        }
         
         private async Task GetProjects()
         {
@@ -100,12 +96,14 @@ namespace BS.Output.VSO
             {
                 lbProjects.DataSource = new List<string>();
                 lbIterations.DataSource = new List<string>();
+                lbBuildDefinitions.DataSource = new List<string>();
                 return;
             }
 
             btnGetProjects.Enabled = false;
             lbProjects.Enabled = false;
             lbIterations.Enabled = false;
+            lbBuildDefinitions.Enabled = false;
             string oldText = btnGetProjects.Text;
             btnGetProjects.Text = Resources.Loading;
 
@@ -128,6 +126,7 @@ namespace BS.Output.VSO
                 btnGetProjects.Enabled = true;
                 lbProjects.Enabled = true;
                 lbIterations.Enabled = true;
+                lbBuildDefinitions.Enabled = true;
             }
         }
 
@@ -148,14 +147,48 @@ namespace BS.Output.VSO
                 VSOClient client;
                 if (!TryGetClient(out client))
                     return;
-                
+
+                lbIterations.SelectedIndexChanged -= lbIterations_SelectedIndexChanged;
+
                 var iterations = (await client.GetIterations(selectedProject)).ToList();
                 string selectedItem = lbIterations.SelectedItem?.ToString() ?? Output.IterationName;
                 SetDataSourceAndSelectedItem(lbIterations, iterations, selectedItem);
+
+                await GetBuildConfigurations();
+
+                lbIterations.SelectedIndexChanged += lbIterations_SelectedIndexChanged;
             }
             finally
             {
                 lbIterations.Enabled = true;
+            }
+        }
+
+        private async Task GetBuildConfigurations()
+        {
+            string selectedProject = lbProjects.SelectedItem?.ToString();
+
+            if (string.IsNullOrEmpty(selectedProject))
+            {
+                lbBuildDefinitions.DataSource = new List<string>();
+                return;
+            }
+
+            lbBuildDefinitions.Enabled = false;
+
+            try
+            {
+                VSOClient client;
+                if (!TryGetClient(out client))
+                    return;
+
+                var buildDefinitions = (await client.GetBuildConfigurations(selectedProject)).ToList();
+                string selectedItem = lbBuildDefinitions.SelectedItem?.ToString() ?? Output.BuildDefinitionName;
+                SetDataSourceAndSelectedItem(lbBuildDefinitions, buildDefinitions, selectedItem);
+            }
+            finally
+            {
+                lbBuildDefinitions.Enabled = true;
             }
         }
 
@@ -187,6 +220,16 @@ namespace BS.Output.VSO
             }
 
             return true;
+        }
+
+        private async void lbProjects_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            await GetIterations();
+        }
+
+        private async void lbIterations_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            await GetBuildConfigurations();
         }
     }
 }

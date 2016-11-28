@@ -60,7 +60,7 @@ namespace BS.Output.VSO
         protected override BugDetails GetSendOptions(IWin32Window owner, VSOOutput vsoOutput, ImageData imageData,
             ref bool cancel)
         {
-            using (EditBugDetailsForm bugDetailsForms = new EditBugDetailsForm())
+            using (EditBugDetailsForm bugDetailsForms = new EditBugDetailsForm(vsoOutput))
             {
                 if (bugDetailsForms.ShowDialog(owner) == DialogResult.OK)
                     return bugDetailsForms.Options;

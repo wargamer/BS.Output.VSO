@@ -35,6 +35,8 @@
             this.btnOk = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
             this.txtReproSteps = new System.Windows.Forms.RichTextBox();
+            this.lbBuilds = new System.Windows.Forms.ComboBox();
+            this.lblBuild = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // txtTitle
@@ -65,20 +67,20 @@
             // 
             // btnOk
             // 
-            this.btnOk.Location = new System.Drawing.Point(116, 225);
+            this.btnOk.Location = new System.Drawing.Point(116, 257);
             this.btnOk.Name = "btnOk";
             this.btnOk.Size = new System.Drawing.Size(75, 23);
-            this.btnOk.TabIndex = 2;
+            this.btnOk.TabIndex = 3;
             this.btnOk.Text = "Ok";
             this.btnOk.UseVisualStyleBackColor = true;
             this.btnOk.Click += new System.EventHandler(this.btnOk_Click);
             // 
             // btnCancel
             // 
-            this.btnCancel.Location = new System.Drawing.Point(197, 226);
+            this.btnCancel.Location = new System.Drawing.Point(197, 258);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(75, 23);
-            this.btnCancel.TabIndex = 3;
+            this.btnCancel.TabIndex = 4;
             this.btnCancel.Text = "Cancel";
             this.btnCancel.UseVisualStyleBackColor = true;
             this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
@@ -92,12 +94,33 @@
             this.txtReproSteps.Text = "";
             this.txtReproSteps.TextChanged += new System.EventHandler(this.txtReproSteps_TextChanged);
             // 
+            // lbBuilds
+            // 
+            this.lbBuilds.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.lbBuilds.FormattingEnabled = true;
+            this.lbBuilds.Location = new System.Drawing.Point(78, 226);
+            this.lbBuilds.Name = "lbBuilds";
+            this.lbBuilds.Size = new System.Drawing.Size(194, 21);
+            this.lbBuilds.TabIndex = 2;
+            this.lbBuilds.SelectedIndexChanged += new System.EventHandler(this.lbBuilds_SelectedIndexChanged);
+            // 
+            // lblBuild
+            // 
+            this.lblBuild.AutoSize = true;
+            this.lblBuild.Location = new System.Drawing.Point(8, 229);
+            this.lblBuild.Name = "lblBuild";
+            this.lblBuild.Size = new System.Drawing.Size(30, 13);
+            this.lblBuild.TabIndex = 9;
+            this.lblBuild.Text = "Build";
+            // 
             // EditBugDetailsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ControlLightLight;
-            this.ClientSize = new System.Drawing.Size(284, 261);
+            this.ClientSize = new System.Drawing.Size(284, 293);
+            this.Controls.Add(this.lblBuild);
+            this.Controls.Add(this.lbBuilds);
             this.Controls.Add(this.txtReproSteps);
             this.Controls.Add(this.btnOk);
             this.Controls.Add(this.btnCancel);
@@ -120,5 +143,7 @@
         private System.Windows.Forms.Button btnOk;
         private System.Windows.Forms.Button btnCancel;
         private System.Windows.Forms.RichTextBox txtReproSteps;
+        private System.Windows.Forms.ComboBox lbBuilds;
+        private System.Windows.Forms.Label lblBuild;
     }
 }

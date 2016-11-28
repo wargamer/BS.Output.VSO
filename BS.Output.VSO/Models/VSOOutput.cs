@@ -33,6 +33,7 @@ namespace BS.Output.VSO.Models
             URL = output.URL;
             ProjectName = output.ProjectName;
             IterationName = output.IterationName;
+            BuildDefinitionName = output.BuildDefinitionName;
             Name = output.Name;
         }
 
@@ -52,6 +53,11 @@ namespace BS.Output.VSO.Models
         public string IterationName { get; set; }
 
         /// <summary>
+        /// Name of the build definition, which allows for easy selection of a related build during submission
+        /// </summary>
+        public string BuildDefinitionName { get; set; }
+
+        /// <summary>
         /// Friendly name for this output
         /// </summary>
         public string Name { get; set; }
@@ -60,7 +66,7 @@ namespace BS.Output.VSO.Models
         /// Second line shown in outputs selection window
         /// </summary>
         public string Information => URL.ToString();
-        
+
         public OutputValueCollection Serialize()
         {
             OutputValueCollection objOutputAttributes = new OutputValueCollection();
