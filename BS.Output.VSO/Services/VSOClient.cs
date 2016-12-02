@@ -108,7 +108,7 @@ namespace BS.Output.VSO.Services
                 {
                     Path = FoundInBuildFieldPath,
                     Operation = Operation.Add,
-                    Value = $"{_output.BuildDefinitionName}/{details.Build}"
+                    Value = $"{details.Build}"
                 });
             }
 
