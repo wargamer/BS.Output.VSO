@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Reflection;
 using System.Threading.Tasks;
 using BS.Output.VSO.Models;
@@ -24,7 +25,7 @@ namespace BS.Output.VSO.Services
         private const string TitleFieldPath = "/fields/System.Title";
         private const string IterationFieldPath = "/fields/System.IterationPath";
         private const string FoundInBuildFieldPath = "/fields/Microsoft.VSTS.Build.FoundIn";
-        
+
         private const string WorkItemType = "Bug";
 
         private VssConnection _connection;
@@ -71,10 +72,15 @@ namespace BS.Output.VSO.Services
         /// </summary>
         public async Task CreateBug(BugDetails details, ImageData pictureOfBug)
         {
+            string filename = $"{pictureOfBug.Title}.bmp";
             var stream = ImageToStream(pictureOfBug.Image);
-            var attachment = await _workItemClient.CreateAttachmentAsync(stream, $"{pictureOfBug.Title}.bmp");
+            var attachment = await _workItemClient.CreateAttachmentAsync(stream, filename);
 
             string reproAsHtml = details.ReproSteps.Replace("\n", "<br />");
+
+            string urlEncodedFilename = WebUtility.UrlEncode(filename);
+            string url = string.Format($"{_output.URL}workitemtracking/v1.0/"
+                                        + $"attachfilehandler.ashx?filenameguid={attachment.Id}&filename={urlEncodedFilename}");
 
             JsonPatchDocument doc = new JsonPatchDocument
             {
@@ -88,7 +94,7 @@ namespace BS.Output.VSO.Services
                 {
                     Path = ReproStepsFieldPath,
                     Operation = Operation.Add,
-                    Value = $"{reproAsHtml}<br /><img src='{attachment.Url}' />"
+                    Value = $"{reproAsHtml}<br /><img src='{url}' />"
                 }
             };
 
@@ -142,7 +148,7 @@ namespace BS.Output.VSO.Services
         /// </summary>
         /// <param name="projectName">Name of the project which the definitions should be linked to</param>
         public async Task<IEnumerable<string>> GetBuildConfigurations(string projectName)
-        {   
+        {
             var buildDefinitions = await _buildClient.GetDefinitionsAsync(project : projectName);
             return buildDefinitions.Select(i => i.Name);
         }
