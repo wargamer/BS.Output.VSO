@@ -20,7 +20,7 @@ namespace BS.Output.VSO.Models
 
         private VSOOutput()
         {
-            
+
         }
 
         public VSOOutput(string strName)
@@ -69,7 +69,7 @@ namespace BS.Output.VSO.Models
 
         public OutputValueCollection Serialize()
         {
-            OutputValueCollection objOutputAttributes = new OutputValueCollection();
+            var objOutputAttributes = new OutputValueCollection();
 
             foreach (var prop in AllProperties)
             {

@@ -28,7 +28,7 @@ namespace BS.Output.VSO
             if (!ValidateUrl())
                 return;
 
-            VSOClient client = new VSOClient(Output);
+            var client = new VSOClient(Output);
             if (!await TryGetClient(client))
                 return;
 
@@ -81,7 +81,7 @@ namespace BS.Output.VSO
             if (string.IsNullOrEmpty(selectedItem))
                 return;
 
-            List<string> items = comboxBox.DataSource as List<string>;
+            var items = comboxBox.DataSource as List<string>;
 
             var itemInList = items
                 ?.FirstOrDefault(p => p.Equals(selectedItem, StringComparison.OrdinalIgnoreCase));
@@ -91,7 +91,7 @@ namespace BS.Output.VSO
 
         private async Task GetProjects()
         {
-            VSOClient client = new VSOClient(Output);
+            var client = new VSOClient(Output);
             if (!ValidateUrl() || !await TryGetClient(client))
             {
                 lbProjects.DataSource = new List<string>();
@@ -144,7 +144,7 @@ namespace BS.Output.VSO
 
             try
             {
-                VSOClient client = new VSOClient(Output);
+                var client = new VSOClient(Output);
                 if (!await TryGetClient(client))
                     return;
 
@@ -194,8 +194,7 @@ namespace BS.Output.VSO
 
         private bool ValidateUrl()
         {
-            Uri uriResult;
-            bool isValid = Uri.TryCreate(txtUrl.Text, UriKind.Absolute, out uriResult)
+            var isValid = Uri.TryCreate(txtUrl.Text, UriKind.Absolute, out var uriResult)
                 && uriResult.Scheme == Uri.UriSchemeHttps;
 
             if (isValid)
@@ -212,13 +211,13 @@ namespace BS.Output.VSO
 
         private static async Task<bool> TryGetClient(VSOClient client)
         {
-            if (!await client.Connect())
+            if (await client.Connect())
             {
-                MessageBox.Show(Resources.Something_went_wrong_while_attempting_to_connect_to_VSO);
-                return false;
+                return true;
             }
 
-            return true;
+            MessageBox.Show(Resources.Something_went_wrong_while_attempting_to_connect_to_VSO);
+            return false;
         }
 
         private async void lbProjects_SelectedIndexChanged(object sender, EventArgs e)

@@ -169,7 +169,7 @@ namespace BS.Output.VSO.Services
 
         private static MemoryStream ImageToStream(System.Drawing.Image imageIn)
         {
-            MemoryStream ms = new MemoryStream();
+            var ms = new MemoryStream();
             imageIn.Save(ms, System.Drawing.Imaging.ImageFormat.Bmp);
             ms.Seek(0, SeekOrigin.Begin);
             return ms;

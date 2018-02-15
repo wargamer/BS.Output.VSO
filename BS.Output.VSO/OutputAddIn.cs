@@ -29,14 +29,14 @@ namespace BS.Output.VSO
 
         protected override VSOOutput CreateOutput(IWin32Window owner)
         {
-            VSOOutput objVsoOutput = new VSOOutput(Name);
+            var objVsoOutput = new VSOOutput(Name);
 
             return EditOutput(owner, objVsoOutput);
         }
 
         protected override VSOOutput EditOutput(IWin32Window owner, VSOOutput output)
         {
-            using (EditOutputSettingsForm settingsForm = new EditOutputSettingsForm(new VSOOutput(output)))
+            using (var settingsForm = new EditOutputSettingsForm(new VSOOutput(output)))
             {
                 if (settingsForm.ShowDialog(owner) == DialogResult.OK)
                 {
@@ -60,7 +60,7 @@ namespace BS.Output.VSO
         protected override BugDetails GetSendOptions(IWin32Window owner, VSOOutput vsoOutput, ImageData imageData,
             ref bool cancel)
         {
-            using (EditBugDetailsForm bugDetailsForms = new EditBugDetailsForm(vsoOutput))
+            using (var bugDetailsForms = new EditBugDetailsForm(vsoOutput))
             {
                 if (bugDetailsForms.ShowDialog(owner) == DialogResult.OK)
                     return bugDetailsForms.Options;
@@ -71,7 +71,7 @@ namespace BS.Output.VSO
 
         protected override async void SendAsync(VSOOutput vsoOutput, ImageData imageData, BugDetails sendOptions, SendResult sendResult)
         {
-            VSOClient client = new VSOClient(vsoOutput);
+            var client = new VSOClient(vsoOutput);
             await client.Connect();
 
             await client.CreateBug(sendOptions, imageData);

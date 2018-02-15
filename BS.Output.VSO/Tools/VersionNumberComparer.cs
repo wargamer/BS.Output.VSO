@@ -48,7 +48,7 @@ namespace BS.Output.VSO.Tools
 
             return xBits.Length < yBits.Length
                 ? -1 // x represents a lower version
-                : 0; // Equal 
+                : 0; // Equal
         }
     }
 }

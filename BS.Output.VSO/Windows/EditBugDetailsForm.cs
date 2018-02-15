@@ -63,7 +63,7 @@ namespace BS.Output.VSO
 
         private async void GetBuilds(VSOOutput output)
         {
-            VSOClient client = new VSOClient(output);
+            var client = new VSOClient(output);
             if (!await client.Connect())
             {
                 MessageBox.Show(Resources.Something_went_wrong_while_attempting_to_connect_to_VSO);

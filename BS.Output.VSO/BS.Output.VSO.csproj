@@ -170,6 +170,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <None Include="BugShootingConfig\BugShooting2.exe.config" />
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
