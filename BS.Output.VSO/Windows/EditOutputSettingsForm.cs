@@ -20,16 +20,16 @@ namespace BS.Output.VSO
             txtOutputName.Text = output.Name;
             Load += OnLoad;
         }
-        
+
         public VSOOutput Output { get; set; }
 
-        private void btnOk_Click(object sender, EventArgs e)
+        private async void btnOk_Click(object sender, EventArgs e)
         {
             if (!ValidateUrl())
                 return;
 
-            VSOClient client;
-            if (!TryGetClient(out client))
+            VSOClient client = new VSOClient(Output);
+            if (!await TryGetClient(client))
                 return;
 
             string selectedProject = lbProjects.SelectedItem?.ToString();
@@ -51,7 +51,7 @@ namespace BS.Output.VSO
             DialogResult = DialogResult.OK;
             Close();
         }
-        
+
         private async void OnLoad(object sender, EventArgs eventArgs)
         {
             if (Output.URL != null)
@@ -67,7 +67,7 @@ namespace BS.Output.VSO
             DialogResult = DialogResult.Cancel;
             Close();
         }
-        
+
         private async void btnGetProjects_Click(object sender, EventArgs e)
         {
             await GetProjects();
@@ -88,11 +88,11 @@ namespace BS.Output.VSO
             if (itemInList != null)
                 comboxBox.SelectedItem = itemInList;
         }
-        
+
         private async Task GetProjects()
         {
-            VSOClient client;
-            if (!ValidateUrl() || !TryGetClient(out client))
+            VSOClient client = new VSOClient(Output);
+            if (!ValidateUrl() || !await TryGetClient(client))
             {
                 lbProjects.DataSource = new List<string>();
                 lbIterations.DataSource = new List<string>();
@@ -144,8 +144,8 @@ namespace BS.Output.VSO
 
             try
             {
-                VSOClient client;
-                if (!TryGetClient(out client))
+                VSOClient client = new VSOClient(Output);
+                if (!await TryGetClient(client))
                     return;
 
                 lbIterations.SelectedIndexChanged -= lbIterations_SelectedIndexChanged;
@@ -178,8 +178,8 @@ namespace BS.Output.VSO
 
             try
             {
-                VSOClient client;
-                if (!TryGetClient(out client))
+                VSOClient client = new VSOClient(Output);
+                if (!await TryGetClient(client))
                     return;
 
                 var buildDefinitions = (await client.GetBuildConfigurations(selectedProject)).ToList();
@@ -210,10 +210,9 @@ namespace BS.Output.VSO
             return isValid;
         }
 
-        private bool TryGetClient(out VSOClient client)
+        private static async Task<bool> TryGetClient(VSOClient client)
         {
-            client = new VSOClient(Output);
-            if (!client.Connect())
+            if (!await client.Connect())
             {
                 MessageBox.Show(Resources.Something_went_wrong_while_attempting_to_connect_to_VSO);
                 return false;

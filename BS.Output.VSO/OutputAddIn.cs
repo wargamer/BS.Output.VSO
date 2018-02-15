@@ -42,13 +42,13 @@ namespace BS.Output.VSO
                 {
                     return settingsForm.Output;
                 }
-            
+
                 return null;
             }
         }
 
         protected override OutputValueCollection SerializeOutput(VSOOutput objVsoOutput)
-        {   
+        {
             return objVsoOutput.Serialize();
         }
 
@@ -70,12 +70,12 @@ namespace BS.Output.VSO
         }
 
         protected override async void SendAsync(VSOOutput vsoOutput, ImageData imageData, BugDetails sendOptions, SendResult sendResult)
-        {   
+        {
             VSOClient client = new VSOClient(vsoOutput);
-            client.Connect();
+            await client.Connect();
 
             await client.CreateBug(sendOptions, imageData);
-        
+
             sendResult.Result = enumSendResult.Success;
         }
     }

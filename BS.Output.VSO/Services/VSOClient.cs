@@ -44,8 +44,8 @@ namespace BS.Output.VSO.Services
         /// <summary>
         /// Attempts to set up a connection to the VSO URL specified by the <see cref="VSOOutput"/>
         /// </summary>
-        /// <returns>True if the connection was set up succesfully</returns>
-        public bool Connect()
+        /// <returns>True if the connection was set up successfully</returns>
+        public async Task<bool> Connect()
         {
             try
             {
@@ -54,10 +54,10 @@ namespace BS.Output.VSO.Services
                     PromptType = CredentialPromptType.PromptIfNeeded
                 };
                 _connection = new VssConnection(_output.URL, creds);
-                _workItemClient = _connection.GetClient<WorkItemTrackingHttpClient>();
-                _projectClient = _connection.GetClient<ProjectHttpClient>();
-                _workClient = _connection.GetClient<WorkHttpClient>();
-                _buildClient = _connection.GetClient<BuildHttpClient>();
+                _workItemClient = await _connection.GetClientAsync<WorkItemTrackingHttpClient>();
+                _projectClient = await _connection.GetClientAsync<ProjectHttpClient>();
+                _workClient = await _connection.GetClientAsync<WorkHttpClient>();
+                _buildClient = await _connection.GetClientAsync<BuildHttpClient>();
 
                 return true;
             }

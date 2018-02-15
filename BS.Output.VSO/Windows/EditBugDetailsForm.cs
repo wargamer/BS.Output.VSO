@@ -34,7 +34,7 @@ namespace BS.Output.VSO
             {
                 MessageBox.Show(Resources.Please_fill_in_all_fields);
                 return;
-            }   
+            }
 
             DialogResult = DialogResult.OK;
             Close();
@@ -45,7 +45,7 @@ namespace BS.Output.VSO
             DialogResult = DialogResult.Cancel;
             Close();
         }
-        
+
         private void txtTitle_TextChanged(object sender, EventArgs e)
         {
             Options.Title = txtTitle.Text;
@@ -64,11 +64,11 @@ namespace BS.Output.VSO
         private async void GetBuilds(VSOOutput output)
         {
             VSOClient client = new VSOClient(output);
-            if (!client.Connect())
+            if (!await client.Connect())
             {
                 MessageBox.Show(Resources.Something_went_wrong_while_attempting_to_connect_to_VSO);
                 return;
-            }   
+            }
 
             var builds = await client.GetBuilds(output.ProjectName, output.BuildDefinitionName);
             var list = builds.OrderByDescending(b => b, new VersionNumberComparer()).ToList();
