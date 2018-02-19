@@ -5,3 +5,5 @@ before_install:
   - mono .nuget/nuget.exe # Output NuGet's version number
 install:
   - mono .nuget/nuget.exe restore BS.Output.VSO.sln -Verbosity detailed
+script:
+  - msbuild /p:Configuration=Release BS.Output.VSO.sln
