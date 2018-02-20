@@ -51,8 +51,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="BS.Output">
-      <HintPath>..\..\..\..\..\Program Files\Bug Shooting 2\BS.Output.dll</HintPath>
+    <Reference Include="BS.Output, Version=2.14.0.772, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\BugShootingOutputApi.2.0.0\lib\BS.Output.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.IdentityModel.Clients.ActiveDirectory, Version=3.19.1.3001, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.IdentityModel.Clients.ActiveDirectory.3.19.1\lib\net45\Microsoft.IdentityModel.Clients.ActiveDirectory.dll</HintPath>
