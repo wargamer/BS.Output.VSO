@@ -192,8 +192,8 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>taskkill /F /IM BugShooting2.exe 2&gt;nul 1&gt;nul
-xcopy /e /Y "$(TargetDir)*.*" "C:\ProgramData\Bug Shooting 2\Outputs\BS.Output.VSO"</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

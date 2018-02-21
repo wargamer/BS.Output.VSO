@@ -7,3 +7,18 @@ install:
   - mono .nuget/nuget.exe restore BS.Output.VSO.sln -Verbosity detailed
 script:
   - msbuild /p:Configuration=Release BS.Output.VSO.sln
+before_deploy:
+  - cd BS.Output.VSO
+  - cd bin
+  - cd Release
+  - rm *.xml
+  - rm *.pdb
+  - tar -zcf release.tar.gz *
+deploy:
+  provider: releases
+  api_key: '$GITHUB_API_KEY'
+  file: 'release.tar.gz'
+  skip_cleanup: true
+  on:
+    all_branches: true
+    tags: false
