@@ -170,9 +170,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="BugShootingConfig\BugShooting2.exe.config">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
