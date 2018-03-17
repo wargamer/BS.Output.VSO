@@ -1,31 +1,26 @@
 using System;
 using System.Drawing;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using BS.Output.VSO.Models;
 using BS.Output.VSO.Properties;
 using BS.Output.VSO.Services;
+using BS.Plugin.V3.Common;
+using BS.Plugin.V3.Output;
 
 namespace BS.Output.VSO
 {
-    public class OutputAddIn : V2.OutputAddIn<VSOOutput, BugDetails>
+    public class OutputAddIn :  OutputPlugin<VSOOutput>
     {
-        protected override Guid ID => new Guid("3185C77F-1583-4A46-A8B7-7D0F69B7F2D8");
-
         protected override string Name => "Visual Studio Online";
 
         protected override string Description => "Visual Studio Online";
 
-        protected override string GroupName => Name;
+        protected override Image Image64 => new Bitmap(Resources.vso_64_32);
 
-        protected override Image Image64x32 => new Bitmap(Resources.vso_64_32);
-
-        protected override Image Image16x16 => new Bitmap(Resources.vso_16_16);
-
-        protected override OutputCategory Category => OutputCategory.BugTracker;
+        protected override Image Image16 => new Bitmap(Resources.vso_16_16);
 
         protected override bool Editable => true;
-
-        protected override bool MultiInstancePossible => true;
 
         protected override VSOOutput CreateOutput(IWin32Window owner)
         {
@@ -34,9 +29,9 @@ namespace BS.Output.VSO
             return EditOutput(owner, objVsoOutput);
         }
 
-        protected override VSOOutput EditOutput(IWin32Window owner, VSOOutput output)
+        protected override VSOOutput EditOutput(IWin32Window owner, VSOOutput vsoOutput)
         {
-            using (var settingsForm = new EditOutputSettingsForm(new VSOOutput(output)))
+            using (var settingsForm = new EditOutputSettingsForm(new VSOOutput(vsoOutput)))
             {
                 if (settingsForm.ShowDialog(owner) == DialogResult.OK)
                 {
@@ -47,18 +42,28 @@ namespace BS.Output.VSO
             }
         }
 
-        protected override OutputValueCollection SerializeOutput(VSOOutput objVsoOutput)
+        protected override OutputValues SerializeOutput(VSOOutput vsoOutput)
         {
-            return objVsoOutput.Serialize();
+            return vsoOutput.Serialize();
         }
 
-        protected override VSOOutput DeserializeOutput(OutputValueCollection objOutputValues)
+        protected override VSOOutput DeserializeOutput(OutputValues outputValues)
         {
-            return VSOOutput.Deserialize(objOutputValues, Name);
+            return VSOOutput.Deserialize(outputValues, Name);
         }
 
-        protected override BugDetails GetSendOptions(IWin32Window owner, VSOOutput vsoOutput, ImageData imageData,
-            ref bool cancel)
+        protected override async Task<SendResult> Send(IWin32Window owner, VSOOutput vsoOutput, ImageData imageData)
+        {
+            var client = new VSOClient(vsoOutput);
+            await client.Connect();
+
+            bool cancelled = false;
+            await client.CreateBug(GetSendOptions(owner, vsoOutput, ref cancelled), imageData);
+
+            return new SendResult(cancelled ? Result.Canceled : Result.Success);
+        }
+
+        private BugDetails GetSendOptions(IWin32Window owner, VSOOutput vsoOutput, ref bool cancel)
         {
             using (var bugDetailsForms = new EditBugDetailsForm(vsoOutput))
             {
@@ -67,16 +72,6 @@ namespace BS.Output.VSO
                 cancel = true;
                 return null;
             }
-        }
-
-        protected override async void SendAsync(VSOOutput vsoOutput, ImageData imageData, BugDetails sendOptions, SendResult sendResult)
-        {
-            var client = new VSOClient(vsoOutput);
-            await client.Connect();
-
-            await client.CreateBug(sendOptions, imageData);
-
-            sendResult.Result = enumSendResult.Success;
         }
     }
 }

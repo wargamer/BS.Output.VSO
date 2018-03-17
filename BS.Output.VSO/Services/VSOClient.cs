@@ -1,11 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net;
-using System.Reflection;
-using System.Threading.Tasks;
 using BS.Output.VSO.Models;
+using BS.Plugin.V3.Common;
 using Microsoft.TeamFoundation.Build.WebApi;
 using Microsoft.TeamFoundation.Core.WebApi;
 using Microsoft.TeamFoundation.Core.WebApi.Types;
@@ -15,6 +9,13 @@ using Microsoft.VisualStudio.Services.Client;
 using Microsoft.VisualStudio.Services.Common;
 using Microsoft.VisualStudio.Services.WebApi;
 using Microsoft.VisualStudio.Services.WebApi.Patch.Json;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Net;
+using System.Reflection;
+using System.Threading.Tasks;
 using Operation = Microsoft.VisualStudio.Services.WebApi.Patch.Operation;
 
 namespace BS.Output.VSO.Services
@@ -73,7 +74,7 @@ namespace BS.Output.VSO.Services
         public async Task CreateBug(BugDetails details, ImageData pictureOfBug)
         {
             string filename = $"{pictureOfBug.Title}.bmp";
-            var stream = ImageToStream(pictureOfBug.Image);
+            var stream = ImageToStream(pictureOfBug.MergedImage);
             var attachment = await _workItemClient.CreateAttachmentAsync(stream, filename);
 
             string reproAsHtml = details.ReproSteps.Replace("\n", "<br />");

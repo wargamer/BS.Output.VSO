@@ -1,6 +1,6 @@
 namespace BS.Output.VSO.Models
 {
-    public class BugDetails : IOutputSendOptions
+    public class BugDetails
     {
         /// <summary>
         /// List of steps to reproduce

@@ -1,3 +1,4 @@
+using BS.Plugin.V3.Output;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -67,21 +68,23 @@ namespace BS.Output.VSO.Models
         /// </summary>
         public string Information => URL.ToString();
 
-        public OutputValueCollection Serialize()
+        public OutputValues Serialize()
         {
-            var objOutputAttributes = new OutputValueCollection();
+            var objOutputAttributes = new OutputValues();
 
             foreach (var prop in AllProperties)
             {
                 var val = prop.GetValue(this)?.ToString();
-                if(val != null)
-                    objOutputAttributes.Add(new OutputValue(prop.Name, val));
+                if (val != null)
+                {
+                    objOutputAttributes.Add(prop.Name, val);
+                }
             }
 
             return objOutputAttributes;
         }
 
-        public static VSOOutput Deserialize(OutputValueCollection objOutputValues, string name)
+        public static VSOOutput Deserialize(OutputValues objOutputValues, string name)
         {
             var output = new VSOOutput();
 
@@ -90,7 +93,7 @@ namespace BS.Output.VSO.Models
                 var converter = TypeDescriptor.GetConverter(prop.PropertyType);
                 if (converter.CanConvertTo(typeof(string)))
                 {
-                    prop.SetValue(output, converter.ConvertFrom(objOutputValues[prop.Name, string.Empty].Value));
+                    prop.SetValue(output, converter.ConvertFrom(objOutputValues[prop.Name, string.Empty]));
                 }
             }
 
