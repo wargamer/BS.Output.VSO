@@ -13,12 +13,12 @@ before_deploy:
   - cd Release
   - rm *.xml
   - rm *.pdb
-  - tar -zcf release.tar.gz *
+  - zip -r BS.Output.VSO.zip *
 deploy:
   provider: releases
   api_key: '$GITHUB_API_KEY'
-  file: 'release.tar.gz'
+  file: 'BS.Output.VSO.zip'
   skip_cleanup: true
   on:
     all_branches: true
-    tags: false
+    tags: true
