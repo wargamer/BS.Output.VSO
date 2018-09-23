@@ -58,12 +58,16 @@ namespace BS.Output.VSO
             await client.Connect();
 
             bool cancelled = false;
-            await client.CreateBug(GetSendOptions(owner, vsoOutput, ref cancelled), imageData);
+            var options = GetSendOptions(owner, vsoOutput, ref cancelled);
+            if (!cancelled)
+            {
+                await client.CreateBug(options, imageData);
+            }
 
             return new SendResult(cancelled ? Result.Canceled : Result.Success);
         }
 
-        private BugDetails GetSendOptions(IWin32Window owner, VSOOutput vsoOutput, ref bool cancel)
+        private static BugDetails GetSendOptions(IWin32Window owner, VSOOutput vsoOutput, ref bool cancel)
         {
             using (var bugDetailsForms = new EditBugDetailsForm(vsoOutput))
             {
