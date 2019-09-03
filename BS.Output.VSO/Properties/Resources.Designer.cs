@@ -61,6 +61,15 @@ namespace BS.Output.VSO.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Failed to upload bug because: {0}.
+        /// </summary>
+        internal static string Failed_to_upload_bug {
+            get {
+                return ResourceManager.GetString("Failed_to_upload_bug", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Invalid URL.
         /// </summary>
         internal static string Invalid_URL {

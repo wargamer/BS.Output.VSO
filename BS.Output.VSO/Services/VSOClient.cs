@@ -11,11 +11,13 @@ using Microsoft.VisualStudio.Services.WebApi;
 using Microsoft.VisualStudio.Services.WebApi.Patch.Json;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Reflection;
 using System.Threading.Tasks;
+using Microsoft.TeamFoundation.WorkItemTracking.WebApi.Models;
 using Operation = Microsoft.VisualStudio.Services.WebApi.Patch.Operation;
 
 namespace BS.Output.VSO.Services
@@ -26,6 +28,7 @@ namespace BS.Output.VSO.Services
         private const string TitleFieldPath = "/fields/System.Title";
         private const string IterationFieldPath = "/fields/System.IterationPath";
         private const string FoundInBuildFieldPath = "/fields/Microsoft.VSTS.Build.FoundIn";
+        private const string RelationFieldPath = "/relations/-";
 
         private const string WorkItemType = "Bug";
 
@@ -73,15 +76,16 @@ namespace BS.Output.VSO.Services
         /// </summary>
         public async Task CreateBug(BugDetails details, ImageData pictureOfBug)
         {
-            string filename = $"{pictureOfBug.Title}.bmp";
-            var stream = ImageToStream(pictureOfBug.MergedImage);
-            var attachment = await _workItemClient.CreateAttachmentAsync(stream, filename);
+            const string urlEncodedFilename = "bug-shooter-screenshot.jpeg";
+            var bitmap = (Bitmap) pictureOfBug.MergedImage;
+            AttachmentReference attachment;
+            using (var stream = ConvertBitmapToMaxQualityJpeg(bitmap))
+            {
+                attachment = await _workItemClient.CreateAttachmentAsync(stream, urlEncodedFilename, uploadType: "Simple",
+                    areaPath: null, userState: null, cancellationToken: default);
+            }
 
             string reproAsHtml = details.ReproSteps.Replace("\n", "<br />");
-
-            string urlEncodedFilename = WebUtility.UrlEncode(filename);
-            string url = string.Format($"{_output.URL}workitemtracking/v1.0/"
-                                        + $"attachfilehandler.ashx?filenameguid={attachment.Id}&filename={urlEncodedFilename}");
 
             JsonPatchDocument doc = new JsonPatchDocument
             {
@@ -95,7 +99,17 @@ namespace BS.Output.VSO.Services
                 {
                     Path = ReproStepsFieldPath,
                     Operation = Operation.Add,
-                    Value = $"{reproAsHtml}<br /><img src='{url}' />"
+                    Value = $"{reproAsHtml}<br /><img src='{attachment.Url}' />"
+                },
+                new JsonPatchOperation
+                {
+                    Path = RelationFieldPath,
+                    Operation = Operation.Add,
+                    Value = new
+                    {
+                        rel = "AttachedFile",
+                        url = attachment.Url
+                    }
                 }
             };
 
@@ -168,12 +182,23 @@ namespace BS.Output.VSO.Services
             return builds.Select(b => b.BuildNumber);
         }
 
-        private static MemoryStream ImageToStream(System.Drawing.Image imageIn)
+        /// <summary>
+        /// Encodes the given <paramref name="bmp"/> as a Jpeg with max (100) quality
+        /// </summary>
+        private static Stream ConvertBitmapToMaxQualityJpeg(Image bmp)
         {
-            var ms = new MemoryStream();
-            imageIn.Save(ms, System.Drawing.Imaging.ImageFormat.Bmp);
-            ms.Seek(0, SeekOrigin.Begin);
-            return ms;
+            Stream stream = new MemoryStream();
+            var encoderParameters = new EncoderParameters(1)
+            {
+                Param = {[0] = new EncoderParameter(Encoder.Quality, 100L)}
+            };
+
+            var codec = ImageCodecInfo.GetImageDecoders()
+                .First(c => c.FormatID == ImageFormat.Jpeg.Guid);
+
+            bmp.Save(stream, codec, encoderParameters);
+            stream.Seek(0, SeekOrigin.Begin);
+            return stream;
         }
 
         private static Assembly CurrentDomainOnAssemblyResolve(object sender, ResolveEventArgs args)

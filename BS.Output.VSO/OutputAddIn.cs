@@ -61,7 +61,15 @@ namespace BS.Output.VSO
             var options = GetSendOptions(owner, vsoOutput, ref cancelled);
             if (!cancelled)
             {
-                await client.CreateBug(options, imageData);
+                try
+                {
+                    await client.CreateBug(options, imageData);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(string.Format(Resources.Failed_to_upload_bug, ex.Message));
+                    return new SendResult(Result.Failed);
+                }
             }
 
             return new SendResult(cancelled ? Result.Canceled : Result.Success);
