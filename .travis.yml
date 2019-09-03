@@ -1,4 +1,7 @@
 language: csharp
+mono: latest
+sudo: required
+dist: xenial
 before_install:
   - mkdir -p .nuget
   - wget -O .nuget/nuget.exe https://dist.nuget.org/win-x86-commandline/latest/nuget.exe
